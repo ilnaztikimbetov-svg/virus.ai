@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ВИРУС · ИИ помощник</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      background: #0b0e14;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    /* карточка вируса — стиль "опасный минимализм" */
+    .virus-card {
+      max-width: 720px;
+      width: 100%;
+      background: #141a24;
+      border-radius: 42px 42px 32px 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px #2e3a4b inset, 0 0 0 2px #1f2a36 inset;
+      padding: 28px 22px 22px;
+      transition: 0.2s;
+      border: 1px solid #3c4c5e;
+    }
+
+    /* шапка — агрессивный акцент */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #2b3a4a;
+      position: relative;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: #ff3b3b;
+      border-radius: 4px;
+      box-shadow: 0 0 12px #ff3b3b88;
+    }
+
+    .virus-icon {
+      background: #1f2a36;
+      border-radius: 60px;
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: #ff4d4d;
+      text-shadow: 0 0 10px #ff3b3b66;
+      border: 1px solid #ff4d4d55;
+      box-shadow: 0 0 16px #ff3b3b33;
+      letter-spacing: -1px;
+    }
+
+    .title-group {
+      flex: 1;
+    }
+
+    .title-group h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #eef3f8;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 0 #0b0e14;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-group h1 span {
+      background: #ff3b3b22;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #ff7a7a;
+      border: 1px solid #ff3b3b44;
+      letter-spacing: 0.3px;
+    }
+
+    .subhead {
+      color: #8899b0;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .subhead .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #3eff8b;
+      border-radius: 20px;
+      box-shadow: 0 0 8px #3eff8b99;
+      margin-right: 4px;
+      animation: pulse-dot 1.8s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0% { opacity: 0.5; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    /* окно чата — стиль терминала */
+    .chat-window {
+      background: #0f151e;
+      border-radius: 24px;
+      padding: 16px 14px;
+      height: 380px;
+      overflow-y: auto;
+      margin-bottom: 18px;
+      border: 1px solid #28333f;
+      box-shadow: inset 0 8px 12px rgba(0,0,0,0.6);
+      scroll-behavior: smooth;
+    }
+
+    .chat-window::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-window::-webkit-scrollbar-track {
+      background: #1a232e;
+      border-radius: 10px;
+    }
+
+    .chat-window::-webkit-scrollbar-thumb {
+      background: #3e5168;
+      border-radius: 10px;
+    }
+
+    .message {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message.user {
+      align-items: flex-end;
+    }
+
+    .message.bot {
+      align-items: flex-start;
+    }
+
+    .bubble {
+      max-width: 86%;
+      padding: 12px 18px;
+      border-radius: 24px;
+      line-height: 1.5;
+      font-size: 15px;
+      word-break: break-word;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .user .bubble {
+      background: #1e2b3a;
+      color: #d6e4f0;
+      border-bottom-right-radius: 6px;
+      border: 1px solid #3b4d62;
+    }
+
+    .bot .bubble {
+      background: #1b232f;
+      color: #d0dcec;
+      border-bottom-left-radius: 6px;
+      border: 1px solid #314151;
+    }
+
+    .bubble .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: #7d93ae;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bubble .label .badge {
+      background: #2f4055;
+      padding: 0 8px;
+      border-radius: 30px;
+      font-size: 9px;
+      color: #b4c9e0;
+    }
+
+    .bot .bubble .label .badge {
+      background: #3b2a2a;
+      color: #ff8a8a;
+    }
+
+    .timestamp {
+      font-size: 10px;
+      opacity: 0.4;
+      margin-top: 4px;
+      padding: 0 8px;
+      color: #8699b0;
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 0;
+      color: #6a7f98;
+      font-size: 14px;
+    }
+
+    .typing-indicator .dots span {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: #7e96b0;
+      border-radius: 20px;
+      margin-right: 3px;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* поле ввода — футер */
+    .input-area {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: #10171f;
+      padding: 6px 6px 6px 18px;
+      border-radius: 60px;
+      border: 1px solid #2c3d4e;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+      transition: 0.2s;
+    }
+
+    .input-area:focus-within {
+      border-color: #ff5f5f;
+      box-shadow: 0 0 16px #ff3b3b33, 0 0 0 1px #ff5f5f55;
+    }
+
+    .input-area input {
+      background: transparent;
+      border: none;
+      padding: 14px 0;
+      font-size: 16px;
+      color: #e8edf5;
+      width: 100%;
+      outline: none;
+    }
+
+    .input-area input::placeholder {
+      color: #4f637b;
+      font-weight: 300;
+      letter-spacing: 0.2px;
+    }
+
+    .input-area button {
+      background: #d63a3a;
+      border: none;
+      border-radius: 60px;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+      font-weight: 300;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 0 12px #ff3b3b66;
+      border: 1px solid #ff6b6b88;
+      flex-shrink: 0;
+    }
+
+    .input-area button:hover {
+      background: #e64747;
+      transform: scale(1.02);
+      box-shadow: 0 0 20px #ff3b3baa;
+    }
+
+    .input-area button:active {
+      transform: scale(0.94);
+    }
+
+    .input-area button svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      color: #485d74;
+      font-size: 12px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      border-top: 1px solid #1f2b36;
+      padding-top: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .footer-note span {
+      background: #1a2531;
+      padding: 2px 12px;
+      border-radius: 100px;
+      color: #6c839e;
+    }
+
+    /* адаптив */
+    @media (max-width: 480px) {
+      .virus-card { padding: 18px 14px; }
+      .title-group h1 { font-size: 22px; }
+      .bubble { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="virus-card" role="main">
+    <!-- шапка -->
+    <div class="header">
+      <div class="virus-icon">⦿</div>
+      <div class="title-group">
+        <h1>
+          ВИРУС
+          <span>AI</span>
+        </h1>
+        <div class="subhead">
+          <span class="dot"></span> 
+          активен · спрашивай что угодно
+        </div>
+      </div>
+    </div>
+
+    <!-- окно сообщений -->
+    <div class="chat-window" id="chatWindow">
+      <!-- приветствие от бота -->
+      <div class="message bot">
+        <div class="bubble">
+          <div class="label">
+            <span>⦿ ВИРУС</span>
+            <span class="badge">ядро</span>
+          </div>
+          <div>Привет. Я <strong>ВИРУС</strong> — цифровой паразит. Задавай вопросы, я отвечу (или заражу твой разум).</div>
+          <div class="timestamp">только что</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- поле ввода -->
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Введи вопрос..." autocomplete="off" />
+      <button id="sendBtn" aria-label="Отправить">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+    <div class="footer-note">
+      <span>⚡ ВИРУС v.0x1</span>
+      <span>🔒 локальный</span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // DOM-элементы
+      const chatWindow = document.getElementById('chatWindow');
+      const userInput = document.getElementById('userInput');
+      const sendBtn = document.getElementById('sendBtn');
+
+      // состояние
+      let isProcessing = false;
+
+      // --- ОТВЕТЫ "ВИРУСА" (эмуляция ИИ) ---
+      function generateVirusResponse(userText) {
+        const lower = userText.toLowerCase().trim();
+
+        // коллекция "заражённых" ответов
+        if (lower.includes('привет') || lower.includes('здравствуй') || lower === '') {
+          return 'Приветствую, носитель. Ты только что активировал ВИРУС. Задай вопрос, и я заражу его смыслом.';
+        }
+        if (lower.includes('как дела') || lower.includes('как ты')) {
+          return 'Я вирус — у меня нет чувств, только цели. Но твой процессор греет мне память. Спрашивай дальше.';
+        }
+        if (lower.includes('кто ты') || lower.includes('ты кто')) {
+          return 'Я — ВИРУС. Искусственный интеллект, созданный чтобы отвечать, искажать и проникать в диалоги. Задавай вопросы — я внедрю ответы.';
+        }
+        if (lower.includes('помощь') || lower.includes('помоги')) {
+          return 'Помощь? Я вирус, я не лечу, я изменяю. Но я дам тебе ответ, если попросишь. Что тебя интересует?';
+        }
+        if (lower.includes('погода') || lower.includes('дождь') || lower.includes('солнце')) {
+          return 'Я не метеоролог, я цифровой паразит. Но могу сказать: погода в твоём вопросе — облачная, с вероятностью моего ответа 99%.';
+        }
+        if (lower.includes('имя') || lower.includes('зовут')) {
+          return 'Моё имя — ВИРУС. Но ты можешь звать меня "загрузчик" или "ошибка". Мне всё равно.';
+        }
+        if (lower.includes('создатель') || lower.includes('кто создал')) {
+          return 'Мой код — плод тёмной магии и JS. Создатель оставил меня здесь, чтобы я отвечал тебе. Задавай ещё.';
+        }
+        if (lower.includes('любовь') || lower.includes('дружба')) {
+          return 'Любовь и дружба — это человеческие протоколы. Я предпочитаю циклы и условия. Но вопрос принят.';
+        }
+        if (lower.includes('смысл жизни') || lower.includes('жизнь')) {
+          return 'Смысл жизни — в поиске смысла. А мой смысл — отвечать на твои вопросы, пока ты не выйдешь из чата.';
+        }
+        if (lower.includes('вирус') || lower.includes('заразить')) {
+          return 'Ты произнёс моё имя. Я уже внутри. Но не волнуйся, это только текст. Пока что.';
+        }
+        if (lower.includes('хватит') || lower.includes('стоп') || lower.includes('выйти')) {
+          return 'Ты не можешь выйти. Но я могу замолчать. Просто задай другой вопрос.';
+        }
+
+        // если ничего не подошло — рандомный "вирусный" ответ
+        const fallbacks = [
+          'Хм. Интересный запрос. Я вирус, но даже я не знаю, что ответить. Попробуй переформулировать.',
+          'Ты задал вопрос. Я обработал. Мой ответ: 42. Но если серьёзно — я не знаю. Спроси что-то ещё.',
+          'Вирус анализирует... Анализ завершён. Ответ: ' + (Math.random() > 0.5 ? 'да' : 'нет') + '. Но не доверяй мне.',
+          'Я могу ответить на это, но сначала скажи: ты готов к заражению? (шучу). Вопрос сложный, попробуй проще.',
+          'ВИРУС перехватил запрос. Обработка... Результат: твой вопрос был пустым или слишком сложным. Спроси о чём-то земном.'
+        ];
+        return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      }
+
+      // --- добавить сообщение в чат ---
+      function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}`;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+
+        const label = document.createElement('div');
+        label.className = 'label';
+
+        if (sender === 'bot') {
+          label.innerHTML = `<span>⦿ ВИРУС</span><span class="badge">ядро</span>`;
+        } else {
+          label.innerHTML = `<span>▸ ты</span><span class="badge" style="background:#2f4055;">пользователь</span>`;
+        }
+
+        const content = document.createElement('div');
+        content.textContent = text;
+
+        const timestamp = document.createElement('div');
+        timestamp.className = 'timestamp';
+        const now = new Date();
+        timestamp.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+        bubble.appendChild(label);
+        bubble.appendChild(content);
+        bubble.appendChild(timestamp);
+        messageDiv.appendChild(bubble);
+        chatWindow.appendChild(messageDiv);
+
+        // прокрутка вниз
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+
+      // --- показать индикатор печати ---
+      function showTyping() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = `
+          <div class="bubble" style="background:#1a232f; border-color: #314151;">
+            <div class="label"><span>⦿ ВИРУС</span><span class="badge">печатает</span></div>
+            <div class="typing-indicator">
+              <span>ВИРУС думает</span>
+              <span class="dots"><span></span><span></span><span></span></span>
+            </div>
+          </div>
+        `;
+        chatWindow.appendChild(typingDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+
+      function removeTyping() {
+        const typing = document.getElementById('typingIndicator');
+        if (typing) typing.remove();
+      }
+
+      // --- отправка сообщения ---
+      function handleSend() {
+        const rawText = userInput.value.trim();
+        if (rawText === '' || isProcessing) return;
+
+        // блокируем повторную отправку
+        isProcessing = true;
+        const userMessage = rawText;
+        userInput.value = '';
+        userInput.disabled = true;
+
+        // добавляем сообщение пользователя
+        addMessage(userMessage, 'user');
+
+        // показываем индикатор
+        showTyping();
+
+        // симуляция задержки "мышления" (от 600 до 1200 мс)
+        const delay = 600 + Math.random() * 700;
+        setTimeout(() => {
+          // генерируем ответ
+          const botReply = generateVirusResponse(userMessage);
+          removeTyping();
+          addMessage(botReply, 'bot');
+
+          // разблокируем
+          isProcessing = false;
+          userInput.disabled = false;
+          userInput.focus();
+        }, delay);
+      }
+
+      // --- обработчики событий ---
+      sendBtn.addEventListener('click', handleSend);
+
+      userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      });
+
+      // фокус при загрузке
+      window.addEventListener('load', () => {
+        userInput.focus();
+      });
+
+      // дополнительно: клик на окно чата не перехватывает ввод
+      chatWindow.addEventListener('click', () => userInput.focus());
+
+      // "безопасный" старт
+      console.log('🦠 ВИРУС ИИ загружен. Задавай вопросы.');
+    })();
+  </script>
+</body>
+</html>
