@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Барбоскин AI</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111827;
+        color: white;
+    }
+
+    header {
+        padding: 20px;
+        text-align: center;
+        background: #1f2937;
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    #chat {
+        height: 70vh;
+        overflow-y: auto;
+        padding: 15px;
+    }
+
+    .message {
+        padding: 12px 15px;
+        margin: 10px 0;
+        border-radius: 15px;
+        max-width: 80%;
+    }
+
+    .user {
+        background: #2563eb;
+        margin-left: auto;
+    }
+
+    .ai {
+        background: #374151;
+        margin-right: auto;
+    }
+
+    .bottom {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        display: flex;
+        padding: 10px;
+        box-sizing: border-box;
+        background: #1f2937;
+    }
+
+    input {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        outline: none;
+    }
+
+    button {
+        margin-left: 8px;
+        padding: 14px 18px;
+        border: none;
+        border-radius: 12px;
+        background: #3b82f6;
+        color: white;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    🐶 Барбоскин AI
+</header>
+
+<div id="chat">
+    <div class="message ai">
+        Привет! Я Барбоскин AI. Напиши мне что-нибудь!
+    </div>
+</div>
+
+<div class="bottom">
+    <input id="input" placeholder="Напиши сообщение...">
+    <button onclick="sendMessage()">Отправить</button>
+</div>
+
+<script>
+function addMessage(text, type) {
+    const chat = document.getElementById("chat");
+
+    const message = document.createElement("div");
+    message.className = "message " + type;
+    message.textContent = text;
+
+    chat.appendChild(message);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function sendMessage() {
+    const input = document.getElementById("input");
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    addMessage(text, "user");
+    input.value = "";
+
+    setTimeout(() => {
+        let answer = "Гав! Интересный вопрос! Пока я ещё учусь отвечать.";
+
+        if (text.toLowerCase().includes("привет")) {
+            answer = "Привет! Я Барбоскин AI!";
+        }
+
+        if (text.toLowerCase().includes("как дела")) {
+            answer = "Гав-гав! У меня всё отлично!";
+        }
+
+        if (text.toLowerCase().includes("барбоскин")) {
+            answer = "Барбоскины на связи!";
+        }
+
+        addMessage(answer, "ai");
+    }, 500);
+}
+</script>
+
+</body>
+</html>
